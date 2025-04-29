@@ -1,0 +1,15 @@
+.FieldButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    animation: fade 3s infinite;
+}
+
+@keyframes smooth-blink {
+    50% { opacity: 0; }
+}
+
+.animateMod {
+    animation: smooth-blink 2s linear infinite;
+}
