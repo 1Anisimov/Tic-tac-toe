@@ -1,23 +1,40 @@
 import {FieldType, GridFieldsType, KeysOnFieldsType} from "../types";
 import {BehaviorSubject, Observable} from "rxjs";
 import {gridFields} from "../consts/gridFields.tsx";
+import {findTheWinner} from "../lib/findTheWinner";
+import {MatrixElementType} from "../../entities/PlayGround/PlayGround.tsx";
+import {getRandomFieldId} from "../lib/getRandomFieldId";
 
 export type PlayGroundStateType = {
     loadGrid: boolean,
     fieldsData: GridFieldsType,
     isComputerMove: boolean | string,
-    isFinishGame: boolean,
     isEndGame: boolean,
+    freeFields: number,
+    isAnimatedEndGame: boolean,
+    isRestartGame: boolean,
+    matrix: Array<MatrixElementType>,
+    winnerResult: KeysOnFieldsType[] | false
+}
+
+const initialState: PlayGroundStateType = {
+    fieldsData: gridFields,
+    isComputerMove: false,
+    loadGrid: false,
+    isEndGame: false,
+    freeFields: 8,
+    isAnimatedEndGame: false,
+    isRestartGame: false,
+    matrix: [
+        '', '', '',
+        '', 'cross', '',
+        '', '', ''
+    ],
+    winnerResult: false
 }
 
 class PlaygroundService {
-    private state$ = new BehaviorSubject<PlayGroundStateType>({
-        fieldsData: gridFields,
-        isComputerMove: false,
-        isFinishGame: false,
-        loadGrid: false,
-        isEndGame: false,
-    })
+    private state$ = new BehaviorSubject<PlayGroundStateType>(initialState)
 
     public readonly stateObservable: Observable<PlayGroundStateType> = this.state$.asObservable();
 
@@ -35,18 +52,76 @@ class PlaygroundService {
         this.state$.next({...currentState, ...stateValue});
     }
 
+    checkIsWinner = (): void => {
+        const { matrix, isEndGame } = this.getCurrentState();
+        const winnerResult = findTheWinner(matrix);
+        if(winnerResult && !isEndGame) {
+            this.setAnimation(winnerResult);
+            this.setState({ winnerResult, isEndGame: true })
+            this.setCallbackDelay(this.setEndGame, 2500);
+            return;
+        }
+    }
+
+    checkHasFreeFields = (): void => {
+        const { freeFields, winnerResult } = this.getCurrentState();
+        if(freeFields === 0 && !winnerResult) {
+            this.setState({ isEndGame: true, isAnimatedEndGame: true })
+            this.setCallbackDelay(this.setEndGame, 2500);
+        }
+    }
+
     setField(field: FieldType) {
         const currentState = this.getCurrentState();
+        const oldMatrix = currentState.matrix;
+        const newMatrix: Array<MatrixElementType> = oldMatrix.map((item: MatrixElementType, index: number) => {
+            if(index === Number(field.id) && field.figure) {
+                return field.figure
+            }
+            return item
+        })
         this.setState({
             fieldsData: {
                 ...currentState.fieldsData,
                 [field.id]: field
             },
-            isComputerMove: currentState.isComputerMove,
-            isFinishGame: currentState.isFinishGame,
-            loadGrid: currentState.loadGrid,
+            matrix: newMatrix
+            // isComputerMove: currentState.isComputerMove,
+            // isFinishGame: currentState.isFinishGame,
+            // loadGrid: currentState.loadGrid,
 
         })
+        this.checkIsWinner();
+        if(currentState.isComputerMove === true) {
+            this.moveComputer()
+        }
+        this.checkHasFreeFields();
+    }
+
+    moveComputer = (): void => {
+        const { isEndGame, fieldsData } = this.getCurrentState();
+        if (isEndGame) {
+            return;
+        }
+        const fieldId = getRandomFieldId(fieldsData);
+        this.setState({isComputerMove: false})
+        this.setField({id: fieldId, figure: 'cross', isEmpty: false, isAnimation: false})
+    }
+
+    completeOval = (): void => {
+        const { freeFields } = this.getCurrentState();
+        this.setState({ freeFields: freeFields - 1, isComputerMove: true })
+        this.moveComputer();
+    }
+
+    completeCross = (): void => {
+        const { freeFields } = this.getCurrentState()
+
+        this.setState({freeFields: freeFields - 1, isComputerMove: false})
+    }
+
+    setLoadGrid = (): void => {
+        this.setState({ loadGrid: true })
     }
 
     setAnimation(fieldIdArr: KeysOnFieldsType[]) {
@@ -64,20 +139,31 @@ class PlaygroundService {
         })
     }
 
-    setEndGame(){
-        this.setState({
-            isEndGame: true,
-        })
+    setCallbackDelay = (callback: VoidFunction, delay: number): void => {
+        setTimeout(() => {
+            callback();
+        }, delay)
     }
 
-    restartGame() {
+    setEndGame = (): void => {
         this.setState({
-            fieldsData: gridFields,
+            fieldsData: {...gridFields, "4": {id: "4", isEmpty: true, isAnimation: false, figure: null}},
+            // fieldsData: gridFields,
             isComputerMove: false,
-            isFinishGame: false,
-            loadGrid: true,
-            isEndGame: false,
+            // loadGrid: true,
+            // isEndGame: true,
+            freeFields: 8,
+            isAnimatedEndGame: false,
+            // isRestartGame: false,
         })
+        this.setCallbackDelay(this.restartGame, 1000);
+        console.log("END GAME")
+    }
+
+    restartGame = (): void => {
+        this.setState(initialState)
+        this.setLoadGrid();
+        console.log("RESTART")
     }
 }
 

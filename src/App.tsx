@@ -1,6 +1,5 @@
-
 import './App.css';
-import {PlayGroundMemo} from "./entities/PlayGround/PlayGround.tsx";
+import { PlayGroundMemo } from "./entities/PlayGround/PlayGround.tsx";
 
 function App() {
 

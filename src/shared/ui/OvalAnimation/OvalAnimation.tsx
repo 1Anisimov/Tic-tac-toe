@@ -2,6 +2,7 @@ import Lottie from "lottie-react";
 import {LottieRefCurrentProps} from 'lottie-react'
 import animationData from "../../../shared/assets/tic-tac-toe-assets/oval.json";
 import {useRef, useEffect} from "react";
+import {playgroundService} from "../../services/PlaygroundService.tsx";
 
 type OvalAnimationProps = {
     handleComplete?: () => void;
@@ -9,7 +10,7 @@ type OvalAnimationProps = {
 }
 
 export const OvalAnimation = (
-    {handleComplete, className}: OvalAnimationProps) => {
+    {className}: OvalAnimationProps) => {
 const lottieRef = useRef<LottieRefCurrentProps>(null);
 
 useEffect(() => {
@@ -18,7 +19,7 @@ useEffect(() => {
 return (
     <Lottie
         className={className}
-        onComplete={handleComplete}
+        onComplete={playgroundService.completeOval}
         lottieRef={lottieRef}
         animationData={animationData}
         loop={0.5}
