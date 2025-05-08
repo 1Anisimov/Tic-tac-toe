@@ -86,11 +86,8 @@ class PlaygroundService {
                 [field.id]: field
             },
             matrix: newMatrix
-            // isComputerMove: currentState.isComputerMove,
-            // isFinishGame: currentState.isFinishGame,
-            // loadGrid: currentState.loadGrid,
-
         })
+
         this.checkIsWinner();
         if(currentState.isComputerMove === true) {
             this.moveComputer()
@@ -148,22 +145,16 @@ class PlaygroundService {
     setEndGame = (): void => {
         this.setState({
             fieldsData: {...gridFields, "4": {id: "4", isEmpty: true, isAnimation: false, figure: null}},
-            // fieldsData: gridFields,
             isComputerMove: false,
-            // loadGrid: true,
-            // isEndGame: true,
             freeFields: 8,
             isAnimatedEndGame: false,
-            // isRestartGame: false,
         })
         this.setCallbackDelay(this.restartGame, 1000);
-        console.log("END GAME")
     }
 
     restartGame = (): void => {
         this.setState(initialState)
         this.setLoadGrid();
-        console.log("RESTART")
     }
 }
 
