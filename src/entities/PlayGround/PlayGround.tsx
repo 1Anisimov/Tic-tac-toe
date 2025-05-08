@@ -6,7 +6,11 @@ import {OvalAnimation} from "../../shared/ui/OvalAnimation/OvalAnimation.tsx";
 import {FieldButton} from "../../shared/ui/FieldButton/FieldButton.tsx";
 import {FieldType} from "../../shared/types";
 import {useReactiveState} from "../../shared/hooks/useReactiveState.tsx";
-import {playgroundService, PlayGroundStateType} from "../../shared/services/PlaygroundService.tsx";
+import {
+    playgroundService,
+    PlayGroundStateType,
+    WHOSE_MOVE
+} from "../../shared/services/PlaygroundService.tsx";
 
 export type MatrixElementType = '' | 'cross' | 'oval';
 
@@ -27,13 +31,14 @@ const PlayGround = () => {
     }, []);
 
     const tabField =  useCallback((field: FieldType) => {
-        if(playgroundState.isComputerMove === false && !playgroundState.isEndGame) {
+        if(playgroundState.whoseMove === WHOSE_MOVE.PLAYER && !playgroundState.isEndGame) {
             if(playgroundState.fieldsData[field.id].isEmpty){
 
                 playgroundService.setField({id: field.id, figure: 'oval', isEmpty: false, isAnimation: false});
+                playgroundService.setWhoseMove(WHOSE_MOVE.LOADING);
             }
         }
-    }, [playgroundState.fieldsData, playgroundState.isComputerMove, playgroundState.isEndGame])
+    }, [playgroundState.fieldsData, playgroundState.whoseMove, playgroundState.isEndGame])
 
  return (
      <div className={cls.Grid}>

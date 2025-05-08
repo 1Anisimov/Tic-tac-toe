@@ -5,10 +5,16 @@ import {findTheWinner} from "../lib/findTheWinner";
 import {MatrixElementType} from "../../entities/PlayGround/PlayGround.tsx";
 import {getRandomFieldId} from "../lib/getRandomFieldId";
 
+export enum WHOSE_MOVE{
+    COMPUTER = 'COMPUTER',
+    PLAYER = 'PLAYER',
+    LOADING = 'LOADING',
+}
+
 export type PlayGroundStateType = {
     loadGrid: boolean,
     fieldsData: GridFieldsType,
-    isComputerMove: boolean | string,
+    whoseMove: WHOSE_MOVE,
     isEndGame: boolean,
     freeFields: number,
     isAnimatedEndGame: boolean,
@@ -19,7 +25,7 @@ export type PlayGroundStateType = {
 
 const initialState: PlayGroundStateType = {
     fieldsData: gridFields,
-    isComputerMove: false,
+    whoseMove: WHOSE_MOVE.PLAYER,
     loadGrid: false,
     isEndGame: false,
     freeFields: 8,
@@ -50,6 +56,10 @@ class PlaygroundService {
     setState(stateValue: Partial<PlayGroundStateType>) {
         const currentState = this.getCurrentState();
         this.state$.next({...currentState, ...stateValue});
+    }
+
+    setWhoseMove = (value: WHOSE_MOVE) => {
+        this.setState({whoseMove: value})
     }
 
     checkIsWinner = (): void => {
@@ -89,7 +99,7 @@ class PlaygroundService {
         })
 
         this.checkIsWinner();
-        if(currentState.isComputerMove === true) {
+        if(currentState.whoseMove === WHOSE_MOVE.COMPUTER) {
             this.moveComputer()
         }
         this.checkHasFreeFields();
@@ -101,20 +111,20 @@ class PlaygroundService {
             return;
         }
         const fieldId = getRandomFieldId(fieldsData);
-        this.setState({isComputerMove: false})
+        this.setState({whoseMove: WHOSE_MOVE.PLAYER})
         this.setField({id: fieldId, figure: 'cross', isEmpty: false, isAnimation: false})
     }
 
     completeOval = (): void => {
         const { freeFields } = this.getCurrentState();
-        this.setState({ freeFields: freeFields - 1, isComputerMove: true })
+        this.setState({ freeFields: freeFields - 1, whoseMove: WHOSE_MOVE.COMPUTER })
         this.moveComputer();
     }
 
     completeCross = (): void => {
         const { freeFields } = this.getCurrentState()
 
-        this.setState({freeFields: freeFields - 1, isComputerMove: false})
+        this.setState({freeFields: freeFields - 1, whoseMove: WHOSE_MOVE.PLAYER})
     }
 
     setLoadGrid = (): void => {
@@ -145,7 +155,7 @@ class PlaygroundService {
     setEndGame = (): void => {
         this.setState({
             fieldsData: {...gridFields, "4": {id: "4", isEmpty: true, isAnimation: false, figure: null}},
-            isComputerMove: false,
+            whoseMove: WHOSE_MOVE.PLAYER,
             freeFields: 8,
             isAnimatedEndGame: false,
         })
