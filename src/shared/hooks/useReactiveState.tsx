@@ -1,5 +1,5 @@
-import {useEffect, useReducer, useRef} from "react";
-import {TReadonlyResult} from "../store/store.ts";
+import { useEffect, useReducer, useRef } from "react";
+import { TReadonlyResult } from "../store/store.ts";  
 
 
 export function useReactiveState<T>(store: TReadonlyResult<T>): T {

@@ -23,6 +23,15 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                "varsIgnorePattern": "_",
+                "argsIgnorePattern": "_",
+            }
+        ],
+        "indent": ["error", 4],
+        "object-curly-spacing": ["error", "always"],
     },
   },
 )

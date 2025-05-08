@@ -1,9 +1,9 @@
-import {FieldType, GridFieldsType, KeysOnFieldsType} from "../types";
-import {gridFields} from "../consts/gridFields.tsx";
-import {findTheWinner} from "../lib/findTheWinner";
-import {MatrixElementType} from "../../entities/PlayGround/PlayGround.tsx";
-import {getRandomFieldId} from "../lib/getRandomFieldId";
-import {Store, TReadonlyResult} from "../store/store.ts";
+import { FieldType, GridFieldsType, KeysOnFieldsType } from "../types";
+import { gridFields } from "../consts/gridFields.tsx";
+import { findTheWinner } from "../lib/findTheWinner";
+import { MatrixElementType } from "../../entities/PlayGround/PlayGround.tsx";
+import { getRandomFieldId } from "../lib/getRandomFieldId";
+import { Store, TReadonlyResult } from "../store/store.ts";
 
 export enum WHOSE_MOVE{
     COMPUTER = 'COMPUTER',
@@ -98,7 +98,7 @@ class PlaygroundService {
         }
         const fieldId = getRandomFieldId(fieldsData);
         this._store.update({ whoseMove: WHOSE_MOVE.PLAYER })
-        this.setField({id: fieldId, figure: 'cross', isEmpty: false, isAnimation: false})
+        this.setField({ id: fieldId, figure: 'cross', isEmpty: false, isAnimation: false })
     }
 
     completeOval = (): void => {
@@ -125,7 +125,7 @@ class PlaygroundService {
             this._store.update({
                 fieldsData: {
                     ...currentState.fieldsData,
-                    [fieldId]: {...currentState.fieldsData[fieldId], isAnimation: true}
+                    [fieldId]: { ...currentState.fieldsData[fieldId], isAnimation: true }
                 }
             })
         })
@@ -139,7 +139,7 @@ class PlaygroundService {
 
     setEndGame = (): void => {
         this._store.update({
-            fieldsData: {...gridFields, "4": {id: "4", isEmpty: true, isAnimation: false, figure: null}},
+            fieldsData: { ...gridFields, "4": { id: "4", isEmpty: true, isAnimation: false, figure: null } },
             whoseMove: WHOSE_MOVE.PLAYER,
             freeFields: 8,
             isAnimatedEndGame: false

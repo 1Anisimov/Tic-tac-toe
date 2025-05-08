@@ -1,4 +1,4 @@
-import {BehaviorSubject, Observable} from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 
 export type TReadonlyResult<T> = {
     state: Observable<T>;
@@ -13,7 +13,7 @@ export class Store<T> {
     }
 
     asObservable(): TReadonlyResult<T> {
-        return { state: Object.seal(this.state$.asObservable()), initial: this.state$.value};
+        return { state: Object.seal(this.state$.asObservable()), initial: this.state$.value };
     }
 
     getState() {
@@ -22,6 +22,6 @@ export class Store<T> {
 
     update(stateValue: Partial<T>) {
         const currentState = this.getState();
-        this.state$.next({...currentState, ...stateValue});
+        this.state$.next({ ...currentState, ...stateValue });
     }
 }
