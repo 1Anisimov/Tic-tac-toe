@@ -1,1 +1,2 @@
 export type { FieldType, GridFieldsType, KeysOnFieldsType, FigureTextType } from './GridFieldsTypes/GridFieldsTypes.ts';
+export type { TReadonlyResult, MatrixElementType, PlayGroundStateType } from './StoreTypes/StoreTypes.ts';

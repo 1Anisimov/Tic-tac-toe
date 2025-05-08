@@ -1,16 +1,14 @@
 import cls from './PlayGround.module.css';
 import { memo, useCallback } from "react";
-import { CrossAnimation } from "../../shared/ui/CrossAnimation/CrossAnimation.tsx";
-import { GridAnimation } from "../../shared/ui/GridAnimation/GridAnimation.tsx";
-import { OvalAnimation } from "../../shared/ui/OvalAnimation/OvalAnimation.tsx";
-import { FieldButton } from "../../shared/ui/FieldButton/FieldButton.tsx";
-import { FieldType } from "../../shared/types";
-import { useReactiveState } from "../../shared/hooks/useReactiveState.tsx";
-import { playgroundService, WHOSE_MOVE } from "../../shared/services/PlaygroundService.tsx";
+import { GridAnimation } from "src/shared/ui/GridAnimation/GridAnimation";
+import { FieldButton } from "src/shared/ui/FieldButton/FieldButton";
+import { FieldType } from "src/shared/types";
+import { useReactiveState } from "src/shared/hooks/useReactiveState";
+import { playgroundService } from "src/shared/services/PlaygroundService";
+import { PlayGroundAnimation } from "./PlayGroundAnimation";
+import { WHOSE_MOVE } from "src/shared/enums";
 
-export type MatrixElementType = '' | 'cross' | 'oval';
-
-const PlayGround = () => {
+const PlayGroundComponent = () => {
 
     const playgroundState = useReactiveState(playgroundService.store)
 
@@ -26,7 +24,7 @@ const PlayGround = () => {
                 playgroundService.setWhoseMove(WHOSE_MOVE.LOADING);
             }
         }
-    }, [playgroundState.fieldsData, playgroundState.whoseMove, playgroundState.isEndGame])   
+    }, [playgroundState.fieldsData, playgroundState.whoseMove, playgroundState.isEndGame])
 
     return (
         <div className={cls.Grid}>
@@ -40,9 +38,7 @@ const PlayGround = () => {
                         onClick={() => tabField(field)}
                     >
                         {!playgroundState.fieldsData[field.id].isEmpty && playgroundState.loadGrid && (
-                            playgroundState.fieldsData[field.id].figure === 'cross'
-                                ? <CrossAnimation />
-                                : <OvalAnimation />
+                            <PlayGroundAnimation fieldId={field.id} />
                         )}
                     </FieldButton>
                 ))}
@@ -50,4 +46,4 @@ const PlayGround = () => {
         </div>
     );
 }
-export const PlayGroundMemo = memo(PlayGround)
+export const PlayGroundMemo = memo(PlayGroundComponent)

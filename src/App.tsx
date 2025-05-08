@@ -1,11 +1,10 @@
 import './App.css';
-import { PlayGroundMemo } from "./entities/PlayGround/PlayGround.tsx";
+import { PlayGroundMemo } from "src/entities/PlayGround/PlayGround";
 
 function App() {
 
     return (
         <>
-            <div>TIC TAC TOE</div>
             <PlayGroundMemo />
         </>
     )

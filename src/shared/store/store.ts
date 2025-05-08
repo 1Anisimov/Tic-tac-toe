@@ -1,9 +1,5 @@
-import { BehaviorSubject, Observable } from "rxjs";
-
-export type TReadonlyResult<T> = {
-    state: Observable<T>;
-    initial: T;
-}
+import { BehaviorSubject } from "rxjs";
+import { TReadonlyResult } from "src/shared/types";
 
 export class Store<T> {
     private state$: BehaviorSubject<T> = new BehaviorSubject<T>({} as T)

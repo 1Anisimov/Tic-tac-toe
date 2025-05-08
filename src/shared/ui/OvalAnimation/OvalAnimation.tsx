@@ -1,11 +1,10 @@
 import Lottie from "lottie-react";
 import { LottieRefCurrentProps } from 'lottie-react'
-import animationData from "../../../shared/assets/tic-tac-toe-assets/oval.json";
+import animationData from "src/shared/assets/tic-tac-toe-assets/oval.json";
 import { useRef, useEffect } from "react";
-import { playgroundService } from "../../services/PlaygroundService.tsx";
+import { playgroundService } from "src/shared/services/PlaygroundService";
 
 type OvalAnimationProps = {
-    handleComplete?: () => void;
     className?: string;
 }
 

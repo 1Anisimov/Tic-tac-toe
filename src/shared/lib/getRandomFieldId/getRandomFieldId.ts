@@ -1,4 +1,4 @@
-import { FieldType, GridFieldsType, KeysOnFieldsType } from "../../types";
+import { FieldType, GridFieldsType, KeysOnFieldsType } from "src/shared/types";
 
 
 export const getRandomFieldId = (fieldsData: GridFieldsType): KeysOnFieldsType => {

@@ -1,43 +1,16 @@
-import { FieldType, GridFieldsType, KeysOnFieldsType } from "../types";
-import { gridFields } from "../consts/gridFields.tsx";
+import {
+    FieldType,
+    KeysOnFieldsType,
+    MatrixElementType,
+    PlayGroundStateType,
+    TReadonlyResult
+} from "../types";
+import { gridFields } from "../consts/gridFields";
 import { findTheWinner } from "../lib/findTheWinner";
-import { MatrixElementType } from "../../entities/PlayGround/PlayGround.tsx";
 import { getRandomFieldId } from "../lib/getRandomFieldId";
-import { Store, TReadonlyResult } from "../store/store.ts";
-
-export enum WHOSE_MOVE{
-    COMPUTER = 'COMPUTER',
-    PLAYER = 'PLAYER',
-    LOADING = 'LOADING',
-}
-
-export type PlayGroundStateType = {
-    loadGrid: boolean,
-    fieldsData: GridFieldsType,
-    whoseMove: WHOSE_MOVE,
-    isEndGame: boolean,
-    freeFields: number,
-    isAnimatedEndGame: boolean,
-    isRestartGame: boolean,
-    matrix: Array<MatrixElementType>,
-    winnerResult: KeysOnFieldsType[] | false
-}
-
-const initialState: PlayGroundStateType = {
-    fieldsData: gridFields,
-    whoseMove: WHOSE_MOVE.PLAYER,
-    loadGrid: false,
-    isEndGame: false,
-    freeFields: 8,
-    isAnimatedEndGame: false,
-    isRestartGame: false,
-    matrix: [
-        '', '', '',
-        '', 'cross', '',
-        '', '', ''
-    ],
-    winnerResult: false
-}
+import { Store } from "../store/store";
+import { WHOSE_MOVE } from "src/shared/enums";
+import { initialState } from "src/shared/consts/initialState";
 
 class PlaygroundService {
     private _store = new Store(initialState)
@@ -54,7 +27,7 @@ class PlaygroundService {
         if(winnerResult && !isEndGame) {
             this.setAnimation(winnerResult);
             this._store.update({ winnerResult, isEndGame: true })
-            this._setCallbackDelay(this.setEndGame, 2500);
+            this._setCallbackDelay(this._setEndGame, 2500);
             return;
         }
     }
@@ -63,7 +36,7 @@ class PlaygroundService {
         const { freeFields, winnerResult } = this._store.getState();
         if(freeFields === 0 && !winnerResult) {
             this._store.update({ isEndGame: true, isAnimatedEndGame: true })
-            this._setCallbackDelay(this.setEndGame, 2500);
+            this._setCallbackDelay(this._setEndGame, 2500);
         }
     }
 
@@ -137,17 +110,17 @@ class PlaygroundService {
         }, delay)
     }
 
-    setEndGame = (): void => {
+    private _setEndGame = (): void => {
         this._store.update({
             fieldsData: { ...gridFields, "4": { id: "4", isEmpty: true, isAnimation: false, figure: null } },
             whoseMove: WHOSE_MOVE.PLAYER,
             freeFields: 8,
             isAnimatedEndGame: false
         })
-        this._setCallbackDelay(this.restartGame, 1000);
+        this._setCallbackDelay(this._restartGame, 1000);
     }
 
-    restartGame = (): void => {
+    private _restartGame = (): void => {
         this._store.update(initialState)
         this.setLoadGrid();
     }

@@ -1,5 +1,4 @@
-import { MatrixElementType } from "../../../entities/PlayGround/PlayGround.tsx";
-import { KeysOnFieldsType } from "../../types";
+import { KeysOnFieldsType, MatrixElementType } from "src/shared/types";
 
 export function findTheWinner(matrix: MatrixElementType[]): KeysOnFieldsType[] | false {
     if((matrix[0] === 'cross' && matrix[3] === 'cross' && matrix[6] === 'cross') ||

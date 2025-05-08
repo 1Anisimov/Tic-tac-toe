@@ -1,0 +1,5 @@
+export enum WHOSE_MOVE {
+    COMPUTER = 'COMPUTER',
+    PLAYER = 'PLAYER',
+    LOADING = 'LOADING',
+}

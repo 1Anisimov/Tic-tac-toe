@@ -1,7 +1,7 @@
 import cls from './FieldButton.module.css';
 import { ReactNode } from "react";
-import { FieldType } from "../../types";
-import { classNames, Mods } from "../../lib/classNames";
+import { FieldType } from "src/shared/types";
+import { classNames, Mods } from "src/shared/lib/classNames";
 
 type FieldButtonProps = {
     field: FieldType,

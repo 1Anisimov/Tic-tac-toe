@@ -1,6 +1,6 @@
 import Lottie from "lottie-react";
 import { LottieRefCurrentProps } from 'lottie-react'
-import animationData from "../../../shared/assets/tic-tac-toe-assets/grid.json";
+import animationData from "src/shared/assets/tic-tac-toe-assets/grid.json";
 import { useRef, useEffect } from "react";
 import cls from './GridAnimation.module.css'
 

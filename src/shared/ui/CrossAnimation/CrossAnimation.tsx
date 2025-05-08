@@ -1,12 +1,11 @@
 import Lottie from "lottie-react";
 import { LottieRefCurrentProps } from 'lottie-react'
-import animationData from "../../../shared/assets/tic-tac-toe-assets/cross.json";
+import animationData from "src/shared/assets/tic-tac-toe-assets/cross.json";
 import { useRef, useEffect, memo } from "react";
-import { playgroundService } from "../../services/PlaygroundService.tsx";
+import { playgroundService } from "src/shared/services/PlaygroundService";
 
 type CrossAnimationType = {
     className?: string;
-    handleComplete?: () => void;
 }
 
 export const CrossAnimation = memo((
