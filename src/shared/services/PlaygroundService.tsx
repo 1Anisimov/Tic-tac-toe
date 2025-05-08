@@ -1,9 +1,9 @@
 import {FieldType, GridFieldsType, KeysOnFieldsType} from "../types";
-import {BehaviorSubject, Observable} from "rxjs";
 import {gridFields} from "../consts/gridFields.tsx";
 import {findTheWinner} from "../lib/findTheWinner";
 import {MatrixElementType} from "../../entities/PlayGround/PlayGround.tsx";
 import {getRandomFieldId} from "../lib/getRandomFieldId";
+import {Store, TReadonlyResult} from "../store/store.ts";
 
 export enum WHOSE_MOVE{
     COMPUTER = 'COMPUTER',
@@ -40,49 +40,35 @@ const initialState: PlayGroundStateType = {
 }
 
 class PlaygroundService {
-    private state$ = new BehaviorSubject<PlayGroundStateType>(initialState)
+    private _store = new Store(initialState)
 
-    public readonly stateObservable: Observable<PlayGroundStateType> = this.state$.asObservable();
-
-    // Methods
-    getState() {
-        return this.state$.asObservable();
-    }
-
-    getCurrentState() {
-        return this.state$.getValue();
-    }
-
-    setState(stateValue: Partial<PlayGroundStateType>) {
-        const currentState = this.getCurrentState();
-        this.state$.next({...currentState, ...stateValue});
-    }
+    public store: TReadonlyResult<PlayGroundStateType> = this._store.asObservable();
 
     setWhoseMove = (value: WHOSE_MOVE) => {
-        this.setState({whoseMove: value})
+        this._store.update({ whoseMove: value })
     }
 
     checkIsWinner = (): void => {
-        const { matrix, isEndGame } = this.getCurrentState();
+        const { matrix, isEndGame } = this._store.getState();
         const winnerResult = findTheWinner(matrix);
         if(winnerResult && !isEndGame) {
             this.setAnimation(winnerResult);
-            this.setState({ winnerResult, isEndGame: true })
-            this.setCallbackDelay(this.setEndGame, 2500);
+            this._store.update({ winnerResult, isEndGame: true })
+            this._setCallbackDelay(this.setEndGame, 2500);
             return;
         }
     }
 
     checkHasFreeFields = (): void => {
-        const { freeFields, winnerResult } = this.getCurrentState();
+        const { freeFields, winnerResult } = this._store.getState();
         if(freeFields === 0 && !winnerResult) {
-            this.setState({ isEndGame: true, isAnimatedEndGame: true })
-            this.setCallbackDelay(this.setEndGame, 2500);
+            this._store.update({ isEndGame: true, isAnimatedEndGame: true })
+            this._setCallbackDelay(this.setEndGame, 2500);
         }
     }
 
     setField(field: FieldType) {
-        const currentState = this.getCurrentState();
+        const currentState = this._store.getState();
         const oldMatrix = currentState.matrix;
         const newMatrix: Array<MatrixElementType> = oldMatrix.map((item: MatrixElementType, index: number) => {
             if(index === Number(field.id) && field.figure) {
@@ -90,7 +76,7 @@ class PlaygroundService {
             }
             return item
         })
-        this.setState({
+        this._store.update({
             fieldsData: {
                 ...currentState.fieldsData,
                 [field.id]: field
@@ -106,38 +92,37 @@ class PlaygroundService {
     }
 
     moveComputer = (): void => {
-        const { isEndGame, fieldsData } = this.getCurrentState();
+        const { isEndGame, fieldsData } = this._store.getState();
         if (isEndGame) {
             return;
         }
         const fieldId = getRandomFieldId(fieldsData);
-        this.setState({whoseMove: WHOSE_MOVE.PLAYER})
+        this._store.update({ whoseMove: WHOSE_MOVE.PLAYER })
         this.setField({id: fieldId, figure: 'cross', isEmpty: false, isAnimation: false})
     }
 
     completeOval = (): void => {
-        const { freeFields } = this.getCurrentState();
-        this.setState({ freeFields: freeFields - 1, whoseMove: WHOSE_MOVE.COMPUTER })
+        const { freeFields } = this._store.getState();
+        this._store.update({ freeFields: freeFields - 1, whoseMove: WHOSE_MOVE.COMPUTER })
         this.moveComputer();
     }
 
     completeCross = (): void => {
-        const { freeFields } = this.getCurrentState()
-
-        this.setState({freeFields: freeFields - 1, whoseMove: WHOSE_MOVE.PLAYER})
+        const { freeFields } = this._store.getState();
+        this._store.update({ freeFields: freeFields - 1, whoseMove: WHOSE_MOVE.PLAYER })
     }
 
     setLoadGrid = (): void => {
-        this.setState({ loadGrid: true })
+        this._store.update({ loadGrid: true })
     }
 
     setAnimation(fieldIdArr: KeysOnFieldsType[]) {
 
         fieldIdArr.forEach((fieldId) => {
-            const currentState = this.getCurrentState();
+            const currentState = this._store.getState();
             if(currentState.fieldsData[fieldId].isAnimation) return;
 
-            this.setState({
+            this._store.update({
                 fieldsData: {
                     ...currentState.fieldsData,
                     [fieldId]: {...currentState.fieldsData[fieldId], isAnimation: true}
@@ -146,24 +131,24 @@ class PlaygroundService {
         })
     }
 
-    setCallbackDelay = (callback: VoidFunction, delay: number): void => {
+    private _setCallbackDelay = (callback: VoidFunction, delay: number): void => {
         setTimeout(() => {
             callback();
         }, delay)
     }
 
     setEndGame = (): void => {
-        this.setState({
+        this._store.update({
             fieldsData: {...gridFields, "4": {id: "4", isEmpty: true, isAnimation: false, figure: null}},
             whoseMove: WHOSE_MOVE.PLAYER,
             freeFields: 8,
-            isAnimatedEndGame: false,
+            isAnimatedEndGame: false
         })
-        this.setCallbackDelay(this.restartGame, 1000);
+        this._setCallbackDelay(this.restartGame, 1000);
     }
 
     restartGame = (): void => {
-        this.setState(initialState)
+        this._store.update(initialState)
         this.setLoadGrid();
     }
 }

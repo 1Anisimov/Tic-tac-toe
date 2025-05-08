@@ -6,25 +6,13 @@ import {OvalAnimation} from "../../shared/ui/OvalAnimation/OvalAnimation.tsx";
 import {FieldButton} from "../../shared/ui/FieldButton/FieldButton.tsx";
 import {FieldType} from "../../shared/types";
 import {useReactiveState} from "../../shared/hooks/useReactiveState.tsx";
-import {
-    playgroundService,
-    PlayGroundStateType,
-    WHOSE_MOVE
-} from "../../shared/services/PlaygroundService.tsx";
+import {playgroundService, WHOSE_MOVE} from "../../shared/services/PlaygroundService.tsx";
 
 export type MatrixElementType = '' | 'cross' | 'oval';
 
 const PlayGround = () => {
 
-    const playgroundState = useReactiveState(
-        useCallback(
-            () => playgroundService.getState(), []),
-        useCallback(
-            () => playgroundService.getCurrentState(), []),
-        useCallback(
-            (a: PlayGroundStateType, b: PlayGroundStateType) =>
-                a === b && a.fieldsData === b.fieldsData, []),
-    );
+    const playgroundState = useReactiveState(playgroundService.store)
 
     const handleComplete = useCallback(() => {
         playgroundService.setLoadGrid()

@@ -1,27 +1,21 @@
-import {Observable} from "rxjs";
 import {useEffect, useReducer, useRef} from "react";
+import {TReadonlyResult} from "../store/store.ts";
 
 
-export function useReactiveState<T>(
-    observable$: () => Observable<T>,
-    getCurrentState: () => T,
-    compareFn: (a: T, b: T) => boolean = (a, b) => a === b,
-    ): T {
+export function useReactiveState<T>(store: TReadonlyResult<T>): T {
     const [_, forceUpdate] = useReducer((x) => x + 1, 0);
-    const stateRef = useRef<T>(getCurrentState());
-
+    const stateRef = useRef<T>(store.initial);
 
     useEffect(() => {
-        const sub = observable$().subscribe(() => {
-            const newState = getCurrentState();
-            if(!compareFn(stateRef.current, newState)) {
-                stateRef.current = newState;
+        const sub = store.state.subscribe((store: T) => {
+
+            if(store !== stateRef.current) {
+                stateRef.current = store;
                 forceUpdate();
             }
-
         })
         return () => sub.unsubscribe();
-    }, [compareFn, getCurrentState, observable$]);
+    }, [stateRef, forceUpdate, store.state]);
 
     return stateRef.current;
 }

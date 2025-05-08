@@ -7,7 +7,10 @@
 }
 
 @keyframes smooth-blink {
-    50% { opacity: 0; }
+    0% { opacity: 1; }
+    33% { opacity: 0; }
+    66% { opacity: 1; }
+    100% { opacity: 0; }
 }
 
 .animateMod {
